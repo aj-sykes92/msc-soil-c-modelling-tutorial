@@ -153,17 +153,23 @@ daylength <- tibble(month = 1:12,
                     daylight_hours = dayhours + daymins / 60) %>%
   select(month, days, daylight_hours)
 
+# function required to combat annoying R 'feature' (returns NaN for negative numbers raised to non-integer powers...)
+rtp <- function(x, power){
+  sign(x) * abs(x) ^ (power)
+}
+
 Dat_main <- Dat_main %>%
   mutate(data_full = data_full %>%
            map(function(df){
              df %>%
                group_by(year) %>%
-               mutate(I = sum((temp_centigrade / 5) ^ 1.514),
-                      alpha = 675*10^-9 * I^3 - 771*10^-7 * I^2 + 1792*10^-5 * I + 0.49239,
-                      PET = 16 * ((10 * temp_centigrade) / I)^alpha) %>%
+               mutate(I = sum(rtp(temp_centigrade / 5, 1.514)),
+                      alpha = 675*10^-9 * rtp(I, 3) - 771*10^-7 * rtp(I, 2) + 1792*10^-5 * I + 0.49239,
+                      pet_mm = rtp(16 * ((10 * temp_centigrade) / I), alpha)) %>%
                ungroup() %>%
                left_join(daylength, by = "month") %>%
-               mutate(PET = PET * daylight_hours / 12 * days / 30) %>%
+               mutate(pet_mm = pet_mm * daylight_hours / 12 * days / 30,
+                      pet_mm = ifelse(pet_mm < 0, 0, pet_mm)) %>%
                select(-I, -alpha, -days, -daylight_hours)
            }))
 
