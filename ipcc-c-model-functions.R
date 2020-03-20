@@ -211,10 +211,10 @@ Lignin_frac <- function(crop_type, manure_type, C_res, C_man){
 # function to modify (tibble) dataframe to include a first row calculated from run-in period
 run_in <- function(df, years){
   df %>%
-    arrange(Year) %>% # make absolutely sure it's in chronological order
+    arrange(year) %>% # make absolutely sure it's in chronological order
     slice(1:years) %>%
     summarise_all(.funs = ifelse(is.numeric(.), mean, median)) %>%
-    mutate(Year = NA) %>%
+    mutate(year = NA) %>%
     bind_rows(df) %>%
     return()
 }
@@ -225,7 +225,7 @@ run_model <- function(df){
   df %>%
     mutate(alpha = alpha(C_input = C_tot,
                          LC = lignin_frac,
-                         NC = n_frac,
+                         NC = N_frac,
                          sand = sand_frac,
                          tillage = till_type),
            beta = beta(C_input = C_tot,
@@ -235,7 +235,7 @@ run_model <- function(df){
            # active pool
            k_a = k_a(tfac = tfac,
                      wfac = wfac,
-                     tillfac = tillfac(till_type),
+                     tillfac = tillfac(tillage = till_type),
                      sand = sand_frac),
            active_y_ss = active_y_ss(k_a = k_a,
                                      alpha = alpha),
@@ -276,22 +276,16 @@ ts_plot <- function(df, col, n = nrow(df), title = col){
   #if(is.null(n)) n <- nrow(df)
   df %>%
     ungroup() %>%
-    mutate(gridcell = 1:nrow(Dat_nest)) %>%
     sample_n(n, replace = F) %>%
     unnest(cols = c(col)) %>%
-    group_by(gridcell) %>%
-    mutate(Total_y_std = Total_y / Total_y[is.na(Year)],
-           Year = ifelse(is.na(Year), min(Year, na.rm = T) - 1, Year)) %>%
-    ggplot(aes(x = Year, y = Total_y_std)) +
-    geom_line(aes(group = gridcell, colour = y), alpha = 0.08) +
+    group_by(sample) %>%
+    mutate(year = ifelse(is.na(year), min(year, na.rm = T) - 1, year)) %>%
+    ggplot(aes(x = year, y = total_y)) +
+    geom_line(aes(group = sample), alpha = 0.08) +
     geom_smooth(size = 0.5, colour = "red") +
-    geom_hline(yintercept = 1, size = 0.5, colour = "black", lty = 2) +
+    geom_hline(yintercept = pull(select(df, col)[[1, 2]], total_y)[1], size = 0.5, colour = "black", lty = 2) +
     labs(x = "Year", y = "SOC response ratio", colour = "Latitude", title = title) +
     theme_classic()
 }
 
-
-
 detach("package:tidyverse", unload = T)
-
-

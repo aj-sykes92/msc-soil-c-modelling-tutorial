@@ -48,28 +48,43 @@ Dat_crop <- Dat_crop %>%
          N_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
                            N_frac),
          lignin_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
-                                Lignin_frac))
+                                Lignin_frac),
+         C_tot = C_res + C_man)
 rm(Dat_manure)
-stop()
-# select and join
-Dat_crop <- left_join(Dat_yield %>%
-                        select(year, yield_tha, C_res, N_frac, lignin_frac),
-                      Dat_manure %>%
-                        select(year, man_nrate, C_man),
-                      by = "year") %>%
-  mutate(C_tot = C_man + C_res,
-         N_frac = N_frac(crop_type = "Barley",
-                         manure_type = man_type))
 
-# join to main model data
+#####################################################
+# join crop-specific variables to main model data
+#####################################################
 # also adding in sand fraction data here since it's an odd one out
 Dat_nest <- Dat_nest %>%
   mutate(data_full = data_full %>%
            map(function(df){
              df %>%
                mutate(sand_frac = sand_frac) %>%
-               left_join(Dat_crop, by = "year")
+               left_join(Dat_crop %>%
+                           select(year, N_frac, lignin_frac, C_tot), by = "year")
            }))
 
+#####################################################
+# run in model for 20 year period and add tillage type
+# can't run in with tillage already added, since it can't be averaged
+#####################################################
+runin_years <- 20
 
+Dat_nest <- Dat_nest %>%
+  mutate(data_runin = data_full %>%
+           map2(runin_years, run_in) %>%
+           map(function(df){
+             df %>%
+               left_join(Dat_crop %>% select(year, till_type), by = "year") %>%
+               mutate(till_type = ifelse(is.na(till_type), "full", till_type))
+           }))
+           
+#####################################################
+# run model!
+#####################################################
+Dat_nest <- Dat_nest %>%
+  mutate(scenario_baseline = data_runin %>%
+           map(run_model))
 
+ts_plot(Dat_nest, "scenario_baseline")

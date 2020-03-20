@@ -39,11 +39,13 @@ Dat_yield %>%
   geom_line()
 
 # write out data with filter to post-1980 (matching climate data)
-# also adding variables here that will be required by model (doing here, not in model script, means students can manually modify)
+# also adding variables here that will be required by model (doing here, not in model script,
+# means students can manually modify the resulting .csv with effect on the model)
 Dat_yield %>%
   filter(year >= 1980) %>%
   mutate(crop_type = "Barley",
          frac_renew = 1,
-         frac_remove = 0.7) %>%
-  select(origin, year, crop_type, yield_tha, frac_renew, frac_remove) %>%
+         frac_remove = 0.7,
+         till_type = "full") %>%
+  select(origin, year, crop_type, yield_tha, frac_renew, frac_remove, till_type) %>%
   write_csv("model-data/bush-estate-barley-yield-tha-1980-2070.csv")
