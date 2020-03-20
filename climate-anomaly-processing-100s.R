@@ -174,7 +174,7 @@ Dat_main <- Dat_main %>%
            }))
 
 # write out main data
-write_rds(Dat_main, "model-data/bush-estate-1901-2097-climvars-100-samples.rds")
+write_rds(Dat_main, "non-model-data/not-for-github/bush-estate-1901-2097-climvars-100-samples.rds")
 
 # trim to 1990-2070 on for student tutorial
 Dat_main %>%

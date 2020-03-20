@@ -13,7 +13,7 @@ source("ipcc-c-model-functions.R")
 Dat_nest <- read_rds("model-data/bush-estate-1980-2070-climvars-100-samples.rds")
 
 # yield data for bush estate's barley
-Dat_yield <- read_csv("model-data/bush-estate-barley-yield-tha-1980-2070.csv")
+Dat_crop <- read_csv("model-data/bush-estate-barley-yield-tha-1980-2070.csv")
 
 # manure application for bush estate's barley
 Dat_manure <- read_csv("model-data/bush-estate-manure-application-1980-2070.csv")
@@ -38,26 +38,28 @@ Dat_nest <- Dat_nest %>%
 # calculate crop-specific variables in the crop dataset
 #####################################################
 
-# C in crop residues
-Dat_yield <- Dat_yield %>%
-  mutate(C_res = C_in_residues(yield = yield_tha,
-                               crop = "Barley",
-                               frac_renew = 1,
-                               frac_remove = 0.7),
-         N_frac = N_frac(crop = "Barley"),
-         lignin_frac = Lignin_frac(crop = "Barley"))
-
-# calculate C inputs from manure
-Dat_manure <- Dat_manure %>%
-  mutate(C_man = map2_dbl(man_nrate, man_type, C_in_manure))
-
+# C inputs from crop residues and manure
+Dat_crop <- Dat_crop %>%
+  mutate(C_res = pmap_dbl(list(yield_tha, crop_type, frac_renew, frac_remove),
+                          C_in_residues)) %>%
+  left_join(Dat_manure, by = "year") %>%
+  mutate(C_man = pmap_dbl(list(man_nrate, man_type),
+                          C_in_manure),
+         N_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
+                           N_frac),
+         lignin_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
+                                Lignin_frac))
+rm(Dat_manure)
+stop()
 # select and join
 Dat_crop <- left_join(Dat_yield %>%
                         select(year, yield_tha, C_res, N_frac, lignin_frac),
                       Dat_manure %>%
                         select(year, man_nrate, C_man),
                       by = "year") %>%
-  mutate(C_tot = C_man + C_res)
+  mutate(C_tot = C_man + C_res,
+         N_frac = N_frac(crop_type = "Barley",
+                         manure_type = man_type))
 
 # join to main model data
 # also adding in sand fraction data here since it's an odd one out

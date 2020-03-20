@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # read in barley yields and convert to relative (base year 2014)
-Dat_yield <- read_csv("model-data/faostat-barley-yield-uk.csv") %>%
+Dat_yield <- read_csv("non-model-data/faostat-barley-yield-uk.csv") %>%
   select(year = Year, Value) %>%
   mutate(yield_rel = Value / Value[year == 2014]) %>%
   select(-Value)
@@ -39,6 +39,11 @@ Dat_yield %>%
   geom_line()
 
 # write out data with filter to post-1980 (matching climate data)
+# also adding variables here that will be required by model (doing here, not in model script, means students can manually modify)
 Dat_yield %>%
   filter(year >= 1980) %>%
+  mutate(crop_type = "Barley",
+         frac_renew = 1,
+         frac_remove = 0.7) %>%
+  select(origin, year, crop_type, yield_tha, frac_renew, frac_remove) %>%
   write_csv("model-data/bush-estate-barley-yield-tha-1980-2070.csv")

@@ -171,7 +171,7 @@ Dat_main <- Dat_main %>%
   }))
 
 # write out main data
-write_rds(Dat_main, "model-data/bush-estate-1901-2097-climvars-500-samples.rds")
+write_rds(Dat_main, "non-model-data/not-for-github/bush-estate-1901-2097-climvars-500-samples.rds")
 
 # trim to 1990-2070 on for student tutorial
 Dat_main %>%
@@ -182,7 +182,7 @@ Dat_main %>%
                filter(year >= 1980,
                       year <= 2070)
            })) %>%
-    write_rds("model-data/bush-estate-1980-2070-climvars-500-samples.rds")
+    write_rds("non-model-data/not-for-github/bush-estate-1980-2070-climvars-500-samples.rds")
 
 # don't run unless needed, takes a minute
 #Dat_main %>%

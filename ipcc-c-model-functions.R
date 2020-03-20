@@ -16,7 +16,7 @@ SOC_stock_change <- function(Active_y, Slow_y, Passive_y){
 # read in model parameters
 # source: https://www.ipcc-nggip.iges.or.jp/public/2019rf/index.html, Vol. 4 .zip folder
 # assign parameters into new environment [pm]
-Dat_param <- read_csv("model-data/parameter-data/model-parameters.csv", col_types = "ccnnnnc")
+Dat_param <- read_csv("parameter-data/model-parameters.csv", col_types = "ccnnnnc")
 pm <- new.env()
 for(i in 1:nrow(Dat_param)){
   assign(Dat_param$Parameter[i], Dat_param$BestEstimate[i], envir = pm)
@@ -143,14 +143,14 @@ passive_y <- function(k_p, passive_y_ss){
 
 ###################
 # function to calculate C inputs from crop residues (tonnes C per hectare)
-C_in_residues <- function(yield, crop, frac_renew, frac_remove){
-  lookup1 <- read_csv("model-data/parameter-data/below-ground-residue-coefficients.csv", na = c("", "NA"), col_types = "cnnn")
-  lookup2 <- read_csv("model-data/parameter-data/above-ground-residue-coefficients.csv", na = c("", "NA"), col_types = "cnnnnn")
+C_in_residues <- function(yield, crop_type, frac_renew, frac_remove){
+  lookup1 <- read_csv("parameter-data/below-ground-residue-coefficients.csv", na = c("", "NA"), col_types = "cnnn")
+  lookup2 <- read_csv("parameter-data/above-ground-residue-coefficients.csv", na = c("", "NA"), col_types = "cnnnnn")
   
-  RS <- lookup1 %>% filter(Crop == crop) %>% pull(RS)
-  DRY <- lookup1 %>% filter(Crop == crop) %>% pull(DRY)
-  Slope <- lookup2 %>% filter(Crop == crop) %>% pull(Slope)
-  Intercept <- lookup2 %>% filter(Crop == crop) %>% pull(Intercept)
+  RS <- lookup1 %>% filter(Crop == crop_type) %>% pull(RS)
+  DRY <- lookup1 %>% filter(Crop == crop_type) %>% pull(DRY)
+  Slope <- lookup2 %>% filter(Crop == crop_type) %>% pull(Slope)
+  Intercept <- lookup2 %>% filter(Crop == crop_type) %>% pull(Intercept)
   
   yield_dry <- yield * DRY
   agdm <- yield_dry * Slope + Intercept
@@ -164,7 +164,7 @@ C_in_residues <- function(yield, crop, frac_renew, frac_remove){
 ###################
 # function to calculate C inputs from manure (tonnes C per hectare)
 C_in_manure <- function(man_nrate, man_type){
-  lookup1 <- read_csv("model-data/parameter-data/manure-coefficients.csv", na = c("", "NA"), col_type = "cnnn")
+  lookup1 <- read_csv("parameter-data/manure-coefficients.csv", na = c("", "NA"), col_type = "cnnn")
   
   CN <- lookup1 %>% filter(Livestock_type == man_type) %>% pull(CN_ratio)
   C_in_manure <- CN * man_nrate * 10^-3 # manure C in tonnes ha-1
@@ -172,15 +172,39 @@ C_in_manure <- function(man_nrate, man_type){
 }
 
 ###################
-# functions to extract crop N and Lignin fractions from parameter data
-N_frac <- function(crop){
-  lookup <- read_csv("model-data/parameter-data/crop-N-and-lignin-fractions.csv", na = c("", "NA"), col_type = "cnn")
-  lookup %>% filter(Crop == "Wheat") %>% pull(N_frac) %>% return()
+# functions to calculate crop N and Lignin fractions from crop and manure parameter data
+N_frac <- function(crop_type, manure_type, C_res, C_man){
+  lookup1 <- read_csv("parameter-data/crop-N-and-lignin-fractions.csv", na = c("", "NA"), col_type = "cnn") %>%
+    filter(Crop == crop_type) %>%
+    mutate(C_frac = 0.42)
+  lookup2 <- read_csv("parameter-data/manure-coefficients.csv", na = c("", "NA"), col_type = "cnnn") %>%
+    filter(Livestock_type == manure_type) %>%
+    mutate(C_frac = N_frac * CN_ratio)
+  
+  tot_res <- C_res / lookup1$C_frac
+  tot_man <- C_man / lookup2$C_frac
+  
+  N_res <- tot_res * lookup1$N_frac
+  N_man <- tot_man * lookup2$N_frac
+  
+  return((N_res + N_man) / (tot_res + tot_man))
 }
 
-Lignin_frac <- function(crop){
-  lookup <- read_csv("model-data/parameter-data/crop-N-and-lignin-fractions.csv", na = c("", "NA"), col_type = "cnn")
-  lookup %>% filter(Crop == "Wheat") %>% pull(Lignin_frac) %>% return()
+Lignin_frac <- function(crop_type, manure_type, C_res, C_man){
+  lookup1 <- read_csv("parameter-data/crop-N-and-lignin-fractions.csv", na = c("", "NA"), col_type = "cnn") %>%
+    filter(Crop == crop_type) %>%
+    mutate(C_frac = 0.42)
+  lookup2 <- read_csv("parameter-data/manure-coefficients.csv", na = c("", "NA"), col_type = "cnnn") %>%
+    filter(Livestock_type == manure_type) %>%
+    mutate(C_frac = N_frac * CN_ratio)
+  
+  tot_res <- C_res / lookup1$C_frac
+  tot_man <- C_man / lookup2$C_frac
+  
+  lignin_res <- tot_res * lookup1$Lignin_frac
+  lignin_man <- tot_man * lookup2$Lignin_frac
+  
+  return((lignin_res + lignin_man) / (tot_res + tot_man))
 }
 
 ###################
