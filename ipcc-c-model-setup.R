@@ -13,7 +13,7 @@ source("ipcc-c-model-functions.R")
 Dat_nest <- read_rds("model-data/bush-estate-1980-2070-climvars-100-samples.rds")
 
 # yield data for bush estate's barley
-Dat_crop <- read_csv("model-data/bush-estate-barley-yield-tha-1980-2070.csv")
+Dat_crop <- read_csv("model-data/bush-estate-barley-crop-data-1980-2070.csv")
 
 # manure application for bush estate's barley
 Dat_manure <- read_csv("model-data/bush-estate-manure-application-1980-2070.csv")

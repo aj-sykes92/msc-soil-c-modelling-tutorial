@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 non-model-data/not-for-github
+*.html

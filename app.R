@@ -1,8 +1,6 @@
 library(shiny)
 library(tidyverse)
 
-#Dat_baseline <- read_rds("model-scenarios/scenario-baseline.rds")
-
 # source functions script
 source("ipcc-c-model-functions.R")
 
@@ -31,7 +29,7 @@ ui <- fluidPage(
                 accept = c("text/csv",
                            "text/comma-separated-values,text/plain",
                            ".csv"),
-                placeholder = "bush-estate-barley-yield-tha-1980-2070.csv"),
+                placeholder = "bush-estate-barley-crop-data-1980-2070.csv"),
       
       # Input: Select a file ----
       fileInput(inputId = "manure_data_bl",
@@ -112,7 +110,7 @@ server <- function(input, output) {
     manure_input <- input$manure_data_bl$datapath
     
     if(!is.null(crop_input) | !is.null(manure_input)){
-      crop_data <- ifelse(!is.null(crop_input), crop_input, "model-data/bush-estate-barley-yield-tha-1980-2070.csv")
+      crop_data <- ifelse(!is.null(crop_input), crop_input, "model-data/bush-estate-barley-crop-data-1980-2070.csv")
       manure_data <- ifelse(!is.null(manure_input), manure_input, "model-data/bush-estate-manure-application-1980-2070.csv")
       
       model$baseline_data <- build_model(clim_data = "model-data/bush-estate-1980-2070-climvars-100-samples.rds",
