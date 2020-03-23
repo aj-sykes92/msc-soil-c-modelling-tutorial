@@ -48,7 +48,7 @@ Dat_crop <- Dat_crop %>%
          N_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
                            N_frac),
          lignin_frac = pmap_dbl(list(crop_type, man_type, C_res, C_man),
-                                Lignin_frac),
+                                lignin_frac),
          C_tot = C_res + C_man)
 rm(Dat_manure)
 
@@ -81,10 +81,15 @@ Dat_nest <- Dat_nest %>%
            }))
            
 #####################################################
-# run model!
+# run model
 #####################################################
 Dat_nest <- Dat_nest %>%
   mutate(scenario_baseline = data_runin %>%
            map(run_model))
 
-ts_plot(Dat_nest, "scenario_baseline")
+#####################################################
+# write out .rds with baseline scenario
+#####################################################
+Dat_nest %>%
+  select(sample, scenario_baseline) %>%
+  write_rds("model-scenarios/scenario-baseline.rds")

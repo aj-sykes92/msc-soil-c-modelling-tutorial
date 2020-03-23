@@ -169,8 +169,16 @@ Dat_main <- Dat_main %>%
                ungroup() %>%
                left_join(daylength, by = "month") %>%
                mutate(pet_mm = pet_mm * daylight_hours / 12 * days / 30,
-                      pet_mm = ifelse(pet_mm < 0, 0, pet_mm)) %>%
+                      pet_mm = ifelse(pet_mm < 1, 1, pet_mm)) %>% # prevents errors with negative PET/div by zero
                select(-I, -alpha, -days, -daylight_hours)
+           }))
+
+# another quick and dirty fix for potential errors - occasional negative precipitation values
+Dat_main <- Dat_main %>%
+  mutate(data_full = data_full %>%
+           map(function(df){
+             df %>%
+               mutate(precip_mm = ifelse(precip_mm < 0, 0, precip_mm))
            }))
 
 # write out main data
