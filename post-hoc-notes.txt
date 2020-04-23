@@ -1,0 +1,26 @@
+Notes on MSc SSCA soil C modelling tutorial
+
+Marking recommendation from Madeleine:
+Aim (5), Methods (30), Results (50), Presentation (15)
+
+Adapted here to:
+Intro/Aims/Discussion: X/10 
+Core scenarios: X/50
+Optimal scenario: X/15
+Discussion of validation: X/10
+Presentation: X/15
+
+Execution of tutorial
+- Note entire tutorial delivered remotely thanks to Covid-19…
+- Some students (n = 2) found that filter() was misfiring in the main plot function — didn’t find cause but cured by removing the geom_hline() element which required the filter() function as a precursor. Presume an issue with the relevant students’ OS, but unable to verify.
+- Some students found that the IPCC coefficients didn’t match for certain crops, and this threw an error. THIS SHOULD BE SORTED IN TIME FOR NEXT YEAR!
+- With remote delivery, many students didn’t watch the tutorial video/etc. until a couple of days before the deadline. Expect lots of last-minute cries for help if this is not dealt with ahead of time.
+
+Lab reports
+- Many students have foregone introductions, conclusions etc.
+- Possibly because the handout gave them details of what to include that didn’t specifically say intro, conclusions etc.?
+
+My notes
+- Not sure how usable the box plot is — some students have tried — not very informative. Change?
+- Possibly refine the alfalfa rotation scenario — made this up with limited time to spare!
+- Clarify the lab report section to specifically request intro, discussion etc. so there’s no ambiguity.

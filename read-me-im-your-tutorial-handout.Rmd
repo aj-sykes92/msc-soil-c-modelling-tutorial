@@ -37,7 +37,7 @@ The model is a simplified, three-pool soil carbon model. These three pools are d
 
 The model simulates the flow of organic carbon into, out of and between these pools. The result can be used to estimate the net removal or addition of CO~2~ to or from the atmosphere. Environmental parameters for the model include monthly temperature, monthly precipitation, monthly potential evapotranspiration and soil sand fraction. Management related parameters include C inputs from crops, lignin and N content of organic matter, tillage practices and manure inputs. All of these things affect how quickly the pools gain and lose carbon, and how carbon flows between them.
 
-Full details of the model implementation can be found in Chapter 5 of [this document](https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html).
+Full details of the model implementation can be found in Chapter 5 of [this document](https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html). It's somewhat heavy going, but it will answer any and all questions you may have about the intricacies of the model.
 
 ## How is this scenario set up?
 This scenario has been set up for barley production on Bush Estate farm (SRUC's campus farm near Penicuik, south of Edinburgh) for the years 1980 to 2070. Since the model relies greatly on climate parameters, I have used a mixture of historical data (up to 2019) and climate predictions (2020--2070) to set up this implementation of the model. Future climate is uncertain, so from 2019 onwards, you will see the model run multiple (*n* = 100) scenarios which capture this uncertainty. We could easily run more scenarios, but 100 makes for a good balance between insight and computational demand.
@@ -63,9 +63,9 @@ Regardless of where you are on the R enthusiasm scale, you need to make sure of 
 
 2. You have RStudio version 1.2.5033 or higher installed on your computer. You can check this by opening RStudio and going to 'About RStudio' on the top menu (the exact location varies depending on Mac/Windows layouts). If you don't have this version installed, you can find the install link for Mac and Windows [here](https://rstudio.com/products/rstudio/download/#download).
 
-3. You have the {tidyverse} package installed and up to date. This simplest way to check this is to type `install.packages("tidyverse")` into the console and hit return. If you don't have it installed, this will install it; if you do, it'll update it as necessary.
+3. You have the `tidyverse` and `shiny` packages installed and up to date. This is crucial---the model won't run without this step! This simplest way to check this is to type `install.packages(c("tidyverse", "shiny"))` into the console and hit return. If you don't have them installed, this will install them; if you do, it'll update them as necessary.
 
-> Note: I realise it's annoying to go through these steps before starting. It's good practice to update your R/RStudio versions regularly---it saves annoying errors and time wasted trying to figure out why. If you really want to skip these steps, you can, but if anything goes wrong when running the model, please come back to this stage and update everything as a first port of call.
+> Note: I realise it's annoying to go through these steps before starting. It's good practice to update your R/RStudio versions regularly---it saves annoying errors and time wasted trying to figure out why. If you really want to skip the first two steps, you can, but if anything goes wrong when running the model, please come back to this stage and update everything as a first port of call. The last step (installing your packages) is not optional, and all you will see is an error message if you skip this one.
 
 ## Using the model
 For instructions on using the model, you should refer to the screen recording also included in your download folder, where a walkthrough demonstration of opening and usign the the model is provided. As a quick reminder, here are the steps you need to go through to run the Shiny app version of the model:
