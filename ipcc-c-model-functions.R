@@ -358,7 +358,7 @@ build_model <- function(clim_data, crop_data, manure_data){
 ###################
 # timeseries plot function
 ts_plot <- function(df_bl, df_mod){
-  baseline <- select(df_bl, "scenario_baseline")[[1, 2]] %>% filter(year == 2018) %>% pull(total_y)
+  baseline <- df_bl$scenario_baseline[[1]] %>% filter(year == 2018) %>% pull(total_y)
   #ylims <- df %>%
   #  ungroup() %>%
   #  unnest(cols = c(col)) %>%
