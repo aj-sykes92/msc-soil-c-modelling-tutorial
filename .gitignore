@@ -4,3 +4,4 @@
 .Ruserdata
 non-model-data/not-for-github
 *.html
+deploy-app\.R
