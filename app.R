@@ -7,6 +7,11 @@ source("ipcc-c-model-functions.R")
 # define UI for data upload app ----
 ui <- fluidPage(
   
+  # app theme and styling
+  theme = shinythemes::shinytheme("lumen"),
+  shinyWidgets::chooseSliderSkin("Nice"),
+  shinybusy::add_busy_spinner(position = "top-right", height = "80px", width = "80px"),
+  
   # app title ----
   titlePanel("IPCC (2019) steady state soil C model for Bush Estate Farm"),
   # app subtitle
