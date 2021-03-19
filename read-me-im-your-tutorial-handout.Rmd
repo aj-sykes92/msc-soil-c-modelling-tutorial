@@ -13,12 +13,16 @@ knitr::opts_chunk$set(echo = TRUE)
 source("ipcc-c-model-functions.R")
 Dat_bl <- read_rds("model-scenarios/scenario-baseline.rds")
 
+Dat_bl <- Dat_bl %>%
+  mutate(scenario_baseline = map(scenario_baseline, run_model))
+
 Dat_mod <- Dat_bl %>%
   mutate(scenario_baseline = scenario_baseline %>%
            map(function(df){
              df %>% mutate(till_type = c(rep("full", 40), rep("zero", 52)))
            }) %>%
            map(run_model))
+
 ts_plot(Dat_bl, Dat_mod)
 
 ```
@@ -102,11 +106,39 @@ Once you have familiarised yourself with using the model, try modifying the mode
 ## Your lab report
 Your lab report should include the following:
 
-1. A summary of the model scenarios you ran (1--7 in the above section **Model Scenarios --- Your Tasks**) including input data values used, and model outputs. The latter can include numeric outputs, app-generated plots (you can screengrab these from the app), and plots you've made yourself using data exported from the model.
+1. A summary of the model scenarios you ran (1--6 in the above section **Model Scenarios --- Your Tasks**) including input data values used, and model outputs. The latter can include numeric outputs, app-generated plots (you can screengrab these from the app), and plots you've made yourself using data exported from the model.
 
 2. A detailed description of your 'optimal' scenario (number 6 in the above section). What final system did you define? How did you arrive at this system? What is your view, as a soil scientist, of what the model is telling you? Does it seem realistic?
 
 3. An answer to the following question: *How could this implementation of this model be validated against real-world data*? Use what you know about model validation (think last week's slides) and soil science to answer this question. Be as specific as you like, but try to keep in mind realistic constraints (e.g. on data collection, laboratory analysis, and so on).
+
+For your information, the marking process for your lab report will use the following structure:
+
+> Intro/Aims/Discussion: X/10  
+> Core scenarios: X/50  
+> Optimal scenario: X/15  
+> Discussion of validation: X/10  
+> Presentation: X/15  
+
+## Some pointers
+
+You'll notice that redefining your data inputs gives you the option to change crop and manure types. Ideally, I'd like you all to look at the model's code and figure out what it's doing when you tell it what crop or manure type is being used --- but I understand that you're under time pressure, and also that this stuff is not easy. So, to help you out, here's a quick crib-notes section to let you know what's possible.
+
+Adding the following crops will work just fine (careful with spelling):
+
+```{r crop-types, echo=F, message=F}
+read_csv("parameter-data/above-ground-residue-coefficients.csv")$Crop
+```
+
+You'll notice that some are specific and some are general --- if you can find the right crop, specific is better, but the general entries give you some more flexibility. Note that "nos" in this context stands for "not otherwise specified".
+
+For manures, the following options are already parameterised in the model:
+
+```{r man-types, echo=F, message=F}
+read_csv("parameter-data/manure-coefficients.csv")$Livestock_type
+```
+
+If you really want to get clever, you can modify or add to this data. It's saved in the `parameter-data` folder. Anything you add, the model will be able to recognise --- though you may have to reload the app.
 
 ## For the ambitious
 Some (optional) tasks to tax the skills of any R/modelling geeks out there:

@@ -229,7 +229,7 @@ the model to analyse the following scenarios:
 
 Your lab report should include the following:
 
-1.  A summary of the model scenarios you ran (1–7 in the above section
+1.  A summary of the model scenarios you ran (1–6 in the above section
     **Model Scenarios — Your Tasks**) including input data values used,
     and model outputs. The latter can include numeric outputs,
     app-generated plots (you can screengrab these from the app), and
@@ -246,6 +246,50 @@ Your lab report should include the following:
     science to answer this question. Be as specific as you like, but try
     to keep in mind realistic constraints (e.g. on data collection,
     laboratory analysis, and so on).
+
+For your information, the marking process for your lab report will use
+the following structure:
+
+> Intro/Aims/Discussion: X/10  
+> Core scenarios: X/50  
+> Optimal scenario: X/15  
+> Discussion of validation: X/10  
+> Presentation: X/15
+
+## Some pointers
+
+You’ll notice that redefining your data inputs gives you the option to
+change crop and manure types. Ideally, I’d like you all to look at the
+model’s code and figure out what it’s doing when you tell it what crop
+or manure type is being used — but I understand that you’re under time
+pressure, and also that this stuff is not easy. So, to help you out,
+here’s a quick crib-notes section to let you know what’s possible.
+
+Adding the following crops will work just fine (careful with spelling):
+
+    ##  [1] "alfalfa"             "barley"              "beans_and_pulses"   
+    ##  [4] "generic_crops_nos"   "grains_nos"          "grass"              
+    ##  [7] "grass_clover_mix"    "maize"               "millet"             
+    ## [10] "n_fixing_forage"     "non_legume_hay"      "non_n_fixing_forage"
+    ## [13] "oats"                "peanut"              "potato"             
+    ## [16] "rice"                "rye"                 "sorghum"            
+    ## [19] "soybean"             "spring_wheat"        "tubers"             
+    ## [22] "wheat"               "winter_wheat"
+
+You’ll notice that some are specific and some are general — if you can
+find the right crop, specific is better, but the general entries give
+you some more flexibility. Note that “nos” in this context stands for
+“not otherwise specified”.
+
+For manures, the following options are already parameterised in the
+model:
+
+    ## [1] "dairy_cattle" "beef_cattle"  "poultry"      "swine"        "horses"      
+    ## [6] "sheep"
+
+If you really want to get clever, you can modify or add to this data.
+It’s saved in the `parameter-data` folder. Anything you add, the model
+will be able to recognise — though you may have to reload the app.
 
 ## For the ambitious
 
